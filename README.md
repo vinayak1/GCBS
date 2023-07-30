@@ -24,6 +24,63 @@ CIFAR10 experimentation ported from [https://docs.lightly.ai/self-supervised-lea
 
 We provide a profiling script for GCBS on random embeddings both for single gpu and multi gpu settings in `single_gpu_profiling_gcbs.py` and `multi_gpu_profiling_gcbs.py` respectively. These scripts contain a minimal implementation of just the algorithm and can be used for porting a PyTorch implementation to your training code.
 
+## Minimal Implementation of GCBS in a PyTorch training loop 
+
+We provide a minimal implementation the GCBS algorithm below:
+
+```python
+import torch
+import math
+from scipy.sparse.csgraph import reverse_cuthill_mckee
+from scipy.sparse import csr_matrix
+import statistics
+import torch.nn.functional.normalize as normalize
+
+def compute_gcbs(z1, z2, quantile):
+      # (1) Stack and normalize outputs
+      src_train_full, tgt_train_full = normalize(z1).cuda(), normalize(z2).cuda()
+      z1, z2 = [], []
+
+      # (2) Estimate quantile
+      chunk_size, num_samples, quantiles = 10, len(tgt_train_full), []
+      for chunk_idx in range(math.ceil(len(tgt_train_full)/chunk_size)):
+        mat_val = src_train_full[chunk_idx*chunk_size:(chunk_idx+1)*chunk_size] @ tgt_train_full.T
+        quantiles.append(float(torch.quantile(mat_val, quantile)))
+
+      # (3) Get similarity graph thresholded on quantile
+      row, col, data, quantile = [], [], [], statistics.median(quantiles)
+      for chunk_idx in range(math.ceil(len(src_train_full)/chunk_size)):
+        mat_val = src_train_full[chunk_idx*chunk_size:(chunk_idx+1)*chunk_size] @ tgt_train_full.T
+        ret = (mat_val.flatten() > quantile).nonzero(as_tuple=True)[0].cpu()
+        row += ((ret - (ret % num_samples))/num_samples + chunk_idx*chunk_size).int().tolist()
+        col += (ret % num_samples).tolist()
+        data += [1.0 for _ in range(len(ret))]
+
+      # (4) Get permutation using graph bandwidth minimization on sparsified graph (cuthill-mckee)
+      return list(reverse_cuthill_mckee(csr_matrix((data, (row, col)),
+                                                    shape=(num_samples, num_samples))))
+
+## Sample code within a Pytorch training loop
+# model.eval()
+# with torch.no_grad():
+#     eval_z1, eval_z2 = [], []
+#     for batch in train_dataloader:
+#         #get paired embeddings for each batch
+#         code_inputs = batch[0].to(args.device), nl_inputs = batch[1].to(args.device)
+#         z1_embedding, z2_embedding = model(code_inputs=code_inputs), model(nl_inputs=nl_inputs)
+
+#         eval_z1.append(z1_embedding.cpu().float())
+#         eval_z2.append(z2_embedding.cpu().float())
+
+#     permutation = compute_gcbs(eval_z1, eval_z2, 0.999)
+#     train_dataset = torch.utils.data.Subset(train_dataset, permutation)
+#     train_sampler = SequentialSampler(train_dataset)
+#     train_dataloader = DataLoader(train_dataset, sampler=train_sampler, batch_size=args.train_batch_size)
+
+# model.train()
+```
+
+
 ## Citation
 For citing this work please use the following Bibtex entry:
 
