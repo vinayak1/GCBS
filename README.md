@@ -66,8 +66,8 @@ def compute_gcbs(z1, z2, quantile):
 #     eval_z1, eval_z2 = [], []
 #     for batch in train_dataloader:
 #         #get paired embeddings for each batch
-#         code_inputs = batch[0].to(args.device), nl_inputs = batch[1].to(args.device)
-#         z1_embedding, z2_embedding = model(code_inputs=code_inputs), model(nl_inputs=nl_inputs)
+#         z1_inputs = batch[0].to(args.device), z2_inputs = batch[1].to(args.device)
+#         z1_embedding, z2_embedding = model(z1_inputs), model(z2_inputs)
 
 #         eval_z1.append(z1_embedding.cpu().float())
 #         eval_z2.append(z2_embedding.cpu().float())
@@ -78,6 +78,7 @@ def compute_gcbs(z1, z2, quantile):
 #     train_dataloader = DataLoader(train_dataset, sampler=train_sampler, batch_size=args.train_batch_size)
 
 # model.train()
+# do standard training
 ```
 
 
