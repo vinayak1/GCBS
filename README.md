@@ -26,7 +26,7 @@ We provide a profiling script for GCBS on random embeddings both for single gpu 
 
 ## Minimal Implementation of GCBS in a PyTorch training loop 
 
-We provide a minimal implementation the GCBS algorithm below:
+We provide a minimal implementation the GCBS algorithm below along with the modifications to an existing PyTorch training loop at the beginning of an epoch. 
 
 ```python
 import torch
@@ -60,7 +60,7 @@ def compute_gcbs(z1, z2, quantile):
       return list(reverse_cuthill_mckee(csr_matrix((data, (row, col)),
                                                     shape=(num_samples, num_samples))))
 
-## Sample code within a Pytorch training loop
+## Sample code within a Pytorch training loop (insert at the beginning of the epoch).
 # model.eval()
 # with torch.no_grad():
 #     eval_z1, eval_z2 = [], []
