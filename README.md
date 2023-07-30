@@ -1,5 +1,5 @@
 # Global Contrastive Batch Sampling
-Repository for the ICML 2023 paper "Global Selection of Contrastive Batches via Optimization on Sample Permutations" [https://proceedings.mlr.press/v202/sachidananda23a.html]
+Repository for the ICML 2023 paper "Global Selection of Contrastive Batches via Optimization on Sample Permutations" [https://proceedings.mlr.press/v202/sachidananda23a/sachidananda23a.pdf]
 
 ## Reproduction of SOTA Paper Results
 
