@@ -16,6 +16,37 @@ torch==1.11.0
 
 TODO: Provide hyperparameters and docker image for replication.
 
+## Testing
+
+This repository includes a comprehensive test suite with over 50 test cases covering:
+
+- **Core GCBS Algorithm**: Validates the fundamental batch sampling implementation
+- **Model Integration**: Tests GCBS with SimCSE, PromCSE, and UniXcoder models  
+- **PyTorch Lightning**: Tests the CIFAR-10 self-supervised learning implementation
+- **Performance**: Validates execution time and memory usage characteristics
+- **Edge Cases**: Tests with various input scenarios and error conditions
+
+### Running Tests
+
+```bash
+# Install test dependencies
+pip install torch scipy
+
+# Run core algorithm tests
+python tests/test_runner.py --test-type core
+
+# Run all tests
+python tests/test_runner.py --test-type all
+
+# Run specific test categories
+python tests/test_runner.py --test-type profiling
+python tests/test_runner.py --test-type lightning
+python tests/test_runner.py --test-type simcse
+python tests/test_runner.py --test-type unixcoder
+```
+
+See [TESTING.md](TESTING.md) for detailed testing documentation.
+
 ## Self-supervised Image Classification experiments
 
 CIFAR10 experimentation ported from [https://docs.lightly.ai/self-supervised-learning/getting_started/benchmarks.html] is provided in `cifar_moco_pytorch_lightning_gcbs.py`. This code uses PyTorch Lightning and contains an implementation of GCBS using `pl.LightningDataModule` and `pl.LightningModule`. It can be used for porting a PyTorch Lightning implementation to your training code.
