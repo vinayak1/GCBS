@@ -1,0 +1,14 @@
+# Testing requirements for GCBS
+torch>=1.11.0
+numpy>=1.21.0
+scipy>=1.7.0
+transformers>=4.0.0
+pytorch-lightning>=1.5.0
+
+# Optional dependencies for specific components
+# lightly-ai  # For PyTorch Lightning CIFAR experiments
+# jupyter  # For running notebooks
+# tqdm  # For progress bars
+
+# Testing framework (usually included with Python)
+# unittest is part of standard library
